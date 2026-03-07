@@ -40,22 +40,28 @@ You should see a number like `v20.x.x`. If you do, you're good to go!
 > ```
 > Pasting it in your browser and pressing Enter will download the ZIP right away.
 
-Once it's downloaded:
-1. Find the ZIP file in your **Downloads** folder (it will be called something like `Debbies-Silkies-copilot-add-chicken-tracker-component.zip`)
-2. Double-click it to unzip it — a new folder will appear
-3. **Rename that folder to `Debbies-Silkies`** so it's easier to work with
-4. Move the renamed folder somewhere easy to find, like your **Desktop** or **Documents** folder
+Once it's downloaded, extract it using these steps on **Windows**:
+
+1. Open your **Downloads** folder in File Explorer
+2. **Right-click** the ZIP file (named `Debbies-Silkies-copilot-add-chicken-tracker-component.zip`)
+3. Click **"Extract All..."**
+4. In the box that appears, clear whatever is there and type `C:\Users\YourName\Desktop` (replace `YourName` with your actual Windows username, e.g. `Owner`), then click **Extract**
+
+> ⚠️ **Windows double-folder warning:** Windows sometimes creates an extra outer folder with the same long name. After extracting, open the folder on your Desktop. If you see **another folder inside it with the same long name**, go into that inner folder — that is where the real tracker files are. You'll know you're in the right place when you can see a file called `package.json` and a folder called `app`.
+
+5. Once you've found the folder containing `package.json`, **rename it to `Debbies-Silkies`** by right-clicking it and choosing **Rename**
 
 ---
 
 ### Step 3 — Install the tracker's dependencies (one-time setup)
 
-1. Open a **Terminal** (Mac) or **Command Prompt** (Windows)
-2. Navigate to the folder you renamed in Step 2. For example, if you moved it to your Desktop:
-   - **Mac:** `cd ~/Desktop/Debbies-Silkies`
-   - **Windows:** `cd C:\Users\YourName\Desktop\Debbies-Silkies`
-   
-   > **Tip:** Not sure of the exact path? On **Windows**, open the folder in File Explorer, then click in the address bar at the top — you'll see the full path. Copy it and paste it after `cd `. On **Mac**, drag the folder into the Terminal window after typing `cd ` (with a space).
+1. Open **Command Prompt**: press the **Windows key**, type `cmd`, and press Enter
+2. Type the following command and press Enter to navigate to your tracker folder:
+   ```
+   cd C:\Users\YourName\Desktop\Debbies-Silkies
+   ```
+   (Replace `YourName` with your actual Windows username — for example, if your username is `Owner`, it would be `C:\Users\Owner\Desktop\Debbies-Silkies`.)
+   > **Tip:** Not sure of the exact path? In File Explorer, open the `Debbies-Silkies` folder, then click in the address bar at the top — you'll see the full path. Copy it and paste it after `cd `.
 3. Type this command and press Enter:
 
 ```
@@ -122,3 +128,23 @@ If something isn't working, check that:
 - Node.js is installed (`node --version` shows a number)
 - You are in the correct project folder in your Terminal
 - You ran `npm install` at least once before running `npm run dev`
+
+---
+
+## Troubleshooting
+
+### "Could not read package.json" when running `npm install`
+
+This means you are in the wrong folder. Windows sometimes creates a double-nested folder when extracting a ZIP — the real tracker files are one level deeper.
+
+In your Command Prompt, type this and press Enter:
+
+```
+cd Debbies-Silkies-copilot-add-chicken-tracker-component
+```
+
+Then run `npm install` again. If it works, that inner folder is the right one — go back to Step 2 and rename it to `Debbies-Silkies` so things are easier next time.
+
+### Not sure which folder to be in?
+
+The correct folder will contain a file called `package.json`. In File Explorer, navigate into your tracker folder. If you can see `package.json` listed there, you're in the right place. Copy the address bar path and use it with `cd` in Command Prompt.
