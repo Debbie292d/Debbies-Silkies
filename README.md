@@ -30,9 +30,15 @@ You should see a number like `v20.x.x`. If you do, you're good to go!
 
 ### Step 2 — Download this project (one-time setup)
 
-**Click this link to download the tracker — it will start immediately:**
+**Click the blue link below to download the tracker — it will start immediately:**
 
 👉 **[Download Debbies-Silkies.zip](https://github.com/Debbie292d/Debbies-Silkies/archive/refs/heads/copilot/add-chicken-tracker-component.zip)**
+
+> **If the link above doesn't look clickable**, copy and paste this address into your web browser:
+> ```
+> https://github.com/Debbie292d/Debbies-Silkies/archive/refs/heads/copilot/add-chicken-tracker-component.zip
+> ```
+> Pasting it in your browser and pressing Enter will download the ZIP right away.
 
 Once it's downloaded:
 1. Find the ZIP file in your **Downloads** folder (it will be called something like `Debbies-Silkies-copilot-add-chicken-tracker-component.zip`)
