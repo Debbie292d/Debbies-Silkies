@@ -28,6 +28,7 @@ export default function ChickenTracker() {
   }
 
   const [sets,setSets] = useState<BatchSet[]>([]);
+  const [editingIndex,setEditingIndex] = useState<number|null>(null);
 
   // Load saved data from localStorage on first render
   useEffect(()=>{
@@ -125,7 +126,14 @@ export default function ChickenTracker() {
       notes
     };
 
-    setSets([...sets,newSet]);
+    if(editingIndex !== null) {
+      const updated = [...sets];
+      updated[editingIndex] = newSet;
+      setSets(updated);
+      setEditingIndex(null);
+    } else {
+      setSets([...sets,newSet]);
+    }
 
     setSetDate("");
     setEggsSet("");
@@ -134,6 +142,42 @@ export default function ChickenTracker() {
     setEggsHatched("");
     setBatchName("");
     setNotes("");
+  };
+
+  const startEdit = (index: number)=>{
+    const s = sets[index];
+    setBatchName(s.batchName);
+    setSpecies(s.species);
+    setSetDate(s.setDate);
+    setEggsSet(s.eggsSet);
+    setInfertileRemoved(s.infertileRemoved);
+    setDeadRemoved(s.deadRemoved);
+    setEggsHatched(s.eggsHatched);
+    setSetPen(s.pen);
+    setIncubator(s.incubator);
+    setNotes(s.notes);
+    setEditingIndex(index);
+    window.scrollTo({top:0,behavior:"smooth"});
+  };
+
+  const cancelEdit = ()=>{
+    setEditingIndex(null);
+    setBatchName("");
+    setSpecies("Chicken");
+    setSetDate("");
+    setEggsSet("");
+    setInfertileRemoved("");
+    setDeadRemoved("");
+    setEggsHatched("");
+    setSetPen("Pen 1");
+    setIncubator("Brinsea 56EX #1");
+    setNotes("");
+  };
+
+  const deleteSet = (index: number)=>{
+    if(!window.confirm("Delete this batch? This cannot be undone.")) return;
+    setSets(sets.filter((_,i)=>i!==index));
+    if(editingIndex===index) setEditingIndex(null);
   };
 
   const daysRemaining = (date: string)=>{
@@ -147,9 +191,11 @@ export default function ChickenTracker() {
 
   };
 
-  const incubatorView = (name: string)=>{
+  const incubatorView = (name: string): (BatchSet & {_index: number})[] =>{
 
-    return sets.filter(s=>s.incubator===name);
+    return sets
+      .map((s,i)=>({...s,_index:i}))
+      .filter(s=>s.incubator===name);
 
   };
 
@@ -205,7 +251,7 @@ export default function ChickenTracker() {
 
   <div className="border p-4 rounded-2xl">
 
-  <h2 className="text-xl font-semibold mb-3">Add Incubation Batch</h2>
+  <h2 className="text-xl font-semibold mb-3">{editingIndex !== null ? "Edit Batch" : "Add Incubation Batch"}</h2>
 
   <div className="flex flex-wrap gap-2">
 
@@ -247,7 +293,11 @@ export default function ChickenTracker() {
 
   <input placeholder="Notes" value={notes} onChange={(e)=>setNotes(e.target.value)} className="border p-1" />
 
-  <button onClick={addSet} className="border px-3 py-1">Add</button>
+  <button onClick={addSet} className="border px-3 py-1">{editingIndex !== null ? "Update" : "Add"}</button>
+
+  {editingIndex !== null && (
+  <button onClick={cancelEdit} className="border px-3 py-1 text-gray-500">Cancel</button>
+  )}
 
   </div>
 
@@ -285,6 +335,11 @@ export default function ChickenTracker() {
   <div>Deaths: {s.deadRemoved} | Hatched: {s.eggsHatched}</div>
 
   <div>Hatch Rate: {s.rate}%</div>
+
+  <div className="flex gap-2 mt-1">
+  <button onClick={()=>startEdit(s._index)} className="border px-2 py-0.5 text-sm">Edit</button>
+  <button onClick={()=>deleteSet(s._index)} className="border px-2 py-0.5 text-sm text-red-600">Delete</button>
+  </div>
 
   </div>
 
