@@ -91,11 +91,21 @@ export default function ChickenTracker() {
     setPens({...pens,[pen]:penBirds[pen]||""});
   };
 
+  // Parse a YYYY-MM-DD string as a LOCAL date (avoids UTC-midnight timezone shift)
+  const parseLocalDate = (s: string)=>{
+    const [y,m,d] = s.split("-").map(Number);
+    return new Date(y,m-1,d);
+  };
+
+  // Format a Date as YYYY-MM-DD using local date fields (not UTC)
+  const fmtDate = (d: Date)=>
+    `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+
   const addSet = ()=>{
 
     if(!setDate) return;
 
-    const set = new Date(setDate);
+    const set = parseLocalDate(setDate);
 
     const hatch = new Date(set);
     hatch.setDate(hatch.getDate()+hatchDays[species]);
@@ -113,8 +123,8 @@ export default function ChickenTracker() {
       batchName,
       species,
       setDate,
-      hatchDate:hatch.toISOString().slice(0,10),
-      lockdownDate:lockdown.toISOString().slice(0,10),
+      hatchDate:fmtDate(hatch),
+      lockdownDate:fmtDate(lockdown),
       eggsSet,
       infertileRemoved,
       deadRemoved,
@@ -183,7 +193,8 @@ export default function ChickenTracker() {
   const daysRemaining = (date: string)=>{
 
     const today = new Date();
-    const hatch = new Date(date);
+    today.setHours(0,0,0,0);
+    const hatch = parseLocalDate(date);
 
     const diff = Math.ceil((hatch.getTime() - today.getTime())/(1000*60*60*24));
 
