@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ChickenTracker() {
 
@@ -8,8 +8,7 @@ export default function ChickenTracker() {
   const incubators = ["Brinsea 56EX #1","Brinsea 56EX #2","Brinsea 56EX #3 (Hatcher)"];
 
   const [pens,setPens] = useState<Record<string,string>>({});
-  const [selectedPen,setSelectedPen] = useState("Pen 1");
-  const [penBirds,setPenBirds] = useState("");
+  const [penBirds,setPenBirds] = useState<Record<string,string>>({});
 
   interface BatchSet {
     batchName: string;
@@ -29,6 +28,33 @@ export default function ChickenTracker() {
   }
 
   const [sets,setSets] = useState<BatchSet[]>([]);
+
+  // Load saved data from localStorage on first render
+  useEffect(()=>{
+    try {
+      const savedPens = localStorage.getItem("debbies-silkies-pens");
+      if(savedPens) {
+        const parsed = JSON.parse(savedPens);
+        setPens(parsed);
+        setPenBirds(parsed); // pre-fill inputs so saved birds are visible right away
+      }
+      const savedSets = localStorage.getItem("debbies-silkies-sets");
+      if(savedSets) setSets(JSON.parse(savedSets));
+    } catch(e) {
+      console.warn("Could not load saved tracker data:", e);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
+
+  // Save pens to localStorage whenever they change
+  useEffect(()=>{
+    localStorage.setItem("debbies-silkies-pens", JSON.stringify(pens));
+  },[pens]);
+
+  // Save sets to localStorage whenever they change
+  useEffect(()=>{
+    localStorage.setItem("debbies-silkies-sets", JSON.stringify(sets));
+  },[sets]);
 
   const [species,setSpecies] = useState("Chicken");
   const [setDate,setSetDate] = useState("");
@@ -60,9 +86,8 @@ export default function ChickenTracker() {
     Peafowl:25
   };
 
-  const savePen = ()=>{
-    setPens({...pens,[selectedPen]:penBirds});
-    setPenBirds("");
+  const savePen = (pen: string)=>{
+    setPens({...pens,[pen]:penBirds[pen]||""});
   };
 
   const addSet = ()=>{
@@ -153,26 +178,25 @@ export default function ChickenTracker() {
 
   <h2 className="text-xl font-semibold mb-3">Breeder Pens</h2>
 
-  <div className="space-x-2">
-
-  <select value={selectedPen} onChange={(e)=>setSelectedPen(e.target.value)} className="border p-1">
-  {breederPens.map(p=>(<option key={p}>{p}</option>))}
-  </select>
-
-  <input
-  placeholder="Birds in this pen"
-  value={penBirds}
-  onChange={(e)=>setPenBirds(e.target.value)}
-  className="border p-1 w-80"
-  />
-
-  <button onClick={savePen} className="border px-3 py-1">Save</button>
-
+  <div className="space-y-2">
+  {breederPens.map(p=>(
+  <div key={p} className="flex items-center gap-2">
+    <span className="w-16 font-medium">{p}</span>
+    <input
+      placeholder="Birds in this pen"
+      value={penBirds[p]||""}
+      onChange={(e)=>setPenBirds({...penBirds,[p]:e.target.value})}
+      className="border p-1 w-80"
+    />
+    <button onClick={()=>savePen(p)} className="border px-3 py-1">Save</button>
+    {pens[p] && pens[p].trim() && <span className="text-green-700 text-sm">✓ Saved</span>}
+  </div>
+  ))}
   </div>
 
   <ul className="mt-4 list-disc pl-6">
   {breederPens.map(p=>(
-  <li key={p}>{p}: {pens[p]} | Hatch Rate: {penStats(p)}%</li>
+  <li key={p}>{p}: {pens[p]||<span className="text-gray-400 italic">not entered yet</span>} | Hatch Rate: {penStats(p)}%</li>
   ))}
   </ul>
 
